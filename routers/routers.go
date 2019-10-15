@@ -66,8 +66,8 @@ func Routers() {
 
 	// components ..
 	Router.Handle("/api/component", auth.JwtMiddleware.Handler(insertCompHandler)).Methods("POST")
-	Router.Handle("/api/all-component/{id:[componentID]}", auth.BasicAuth(getAllCompHandler)).Methods("GET")
-	Router.Handle("/api/component/{componentID}", auth.BasicAuth(getOneCompHandler)).Methods("GET")
+	Router.Handle("/api/component", auth.JwtMiddleware.Handler(getAllCompHandler)).Methods("GET")
+	Router.Handle("/api/component/{componentID}", auth.JwtMiddleware.Handler(getOneCompHandler)).Methods("GET")
 	Router.Handle("/api/component/{componentID}", auth.JwtMiddleware.Handler(updateCompHandler)).Methods("PUT")
 	Router.Handle("/api/del-component/{componentID}", auth.JwtMiddleware.Handler(deleteCompHandler)).Methods("PUT")
 

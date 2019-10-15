@@ -35,6 +35,14 @@ type Data struct {
 	Specs   string `bson:"specs" json:"specs"`
 }
 
+// HTTPResponse struct ..
+type HTTPResponse struct {
+	Error   error  `bson:"error" json:"error"`
+	Data    int    `bson:"data" json:"data"`
+	Code    int    `bson:"code" json:"code"`
+	Message string `bson:"message" json:"message"`
+}
+
 // Components Slice Data ..
 // A Slice is basically a variable length array
 // component struct as a slice

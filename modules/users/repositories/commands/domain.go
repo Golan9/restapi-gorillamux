@@ -16,6 +16,7 @@ import (
 var dao = database.DAO{}
 var commands = Commands{}
 var queries = q.Queries{}
+var msg = m.HTTPResponse{}
 
 // UsersCommandHandlers .. // INI JUGA RAHMAT
 type UsersCommandHandlers struct{}
@@ -31,23 +32,28 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Write(response)
 }
 
+func respondWithCode(w http.ResponseWriter, code int, payload interface{}, msg m.HTTPResponse) {
+	respondWithJSON(w, code, map[string]interface{}{
+		"error":   msg.Error,
+		"data":    payload,
+		"code":    msg.Code,
+		"message": msg.Message,
+	})
+}
+
 // RegisterUser ..
 func (h *UsersCommandHandlers) RegisterUser(w http.ResponseWriter, r *http.Request) error {
-	// w.Header().Set("Content-Type", "application/json")
-	//fmt.Println("masuk domain.go", w, r.Body)
 	defer r.Body.Close()
 	userID := uuid.Must(uuid.NewV4())
 	var user m.User
 
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Request Payload!")
-		//	fmt.Println("payload salah", err)
 
 		return err
 	}
 	user.UserID = userID.String()
 	user.Status = m.Active
-	//fmt.Println("user", user)
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 5)
 
@@ -56,15 +62,18 @@ func (h *UsersCommandHandlers) RegisterUser(w http.ResponseWriter, r *http.Reque
 		return err
 	}
 	user.Password = string(hash)
-	//fmt.Println("user", user)
 
 	if err := commands.Insert(user); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
-		//	fmt.Println("error cuy", err)
 
 		return err
 	}
-	respondWithJSON(w, http.StatusCreated, user)
+
+	msg.Code = 200
+	msg.Error = err
+	msg.Message = "Success"
+
+	respondWithCode(w, http.StatusCreated, user, msg)
 	return nil
 }
 
@@ -73,6 +82,7 @@ func (h *UsersCommandHandlers) Login(w http.ResponseWriter, r *http.Request) err
 	defer r.Body.Close()
 	var user m.User
 	var lg m.LoginResponse
+
 	if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Request Payload!")
 		return err
@@ -111,7 +121,10 @@ func (h *UsersCommandHandlers) Login(w http.ResponseWriter, r *http.Request) err
 	lg.Username = login.Username
 	lg.Password = login.Password
 	lg.Token = token
+	msg.Code = 200
+	msg.Error = err
+	msg.Message = "Success"
 
-	respondWithJSON(w, http.StatusOK, lg)
+	respondWithCode(w, http.StatusOK, lg, msg)
 	return nil
 }

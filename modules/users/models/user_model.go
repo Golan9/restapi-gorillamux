@@ -35,10 +35,12 @@ type LoginResponse struct {
 	Token    string `bson:"token" json:"token"`
 }
 
-type HttpResponse struct {
-	Error   string
-	Message string
-	Data    string
+// HTTPResponse struct ..
+type HTTPResponse struct {
+	Error   error  `bson:"error" json:"error"`
+	Data    int    `bson:"data" json:"data"`
+	Code    int    `bson:"code" json:"code"`
+	Message string `bson:"message" json:"message"`
 }
 
 // Users Slice Data ..

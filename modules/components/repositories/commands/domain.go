@@ -12,6 +12,7 @@ import (
 
 var commands = Commands{}
 var queries = q.Queries{}
+var msg = m.HTTPResponse{}
 
 // ComponentsCommandHandlers ..
 type ComponentsCommandHandlers struct{}
@@ -25,6 +26,15 @@ func respondWithJSON(w http.ResponseWriter, code int, payload interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	w.Write(response)
+}
+
+func respondWithCode(w http.ResponseWriter, code int, payload interface{}, msg m.HTTPResponse) {
+	respondWithJSON(w, code, map[string]interface{}{
+		"error":   msg.Error,
+		"data":    payload,
+		"code":    msg.Code,
+		"message": msg.Message,
+	})
 }
 
 // InsertComponent ..
@@ -43,7 +53,9 @@ func (h *ComponentsCommandHandlers) InsertComponent(w http.ResponseWriter, r *ht
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return err
 	}
-	respondWithJSON(w, http.StatusCreated, component)
+	msg.Code = 201
+	msg.Message = "Success"
+	respondWithCode(w, http.StatusCreated, component, msg)
 	return nil
 }
 
