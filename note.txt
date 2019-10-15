@@ -1,0 +1,16 @@
+GOLANG :
+Go is a statically typed language.
+like Java, C#, etc.
+or example. 
+
+TYPE INFERENCE :
+var age int = 10
+to
+age := 10 
+
+// put interface here! and structs!
+// is ORM = CQRS?
+// Event = Delta? event sourcing -> structural rep. of obj -> whict part in structural base?
+// DDD? EDD?
+// Event not need ORM?
+// Event is for storage mechanism <<<
