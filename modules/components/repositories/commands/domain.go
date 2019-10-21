@@ -41,7 +41,7 @@ func respondWithCode(w http.ResponseWriter, code int, payload interface{}, msg m
 func (h *ComponentsCommandHandlers) InsertComponent(w http.ResponseWriter, r *http.Request) error {
 	// w.Header().Set("Content-Type", "application/json")
 	defer r.Body.Close()
-	componentID := uuid.Must(uuid.NewV4())
+	componentID := uuid.Must(uuid.NewV4(), nil)
 	var component m.Component
 	if err := json.NewDecoder(r.Body).Decode(&component); err != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid Request Payload!")
